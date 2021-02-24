@@ -110,6 +110,7 @@ BEGIN_MESSAGE_MAP(CLeafELMDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_CONNECT, &CLeafELMDlg::OnBnClickedConnect)
+	ON_MESSAGE(WM_USER+1, &CLeafELMDlg::OnWmUser )
 END_MESSAGE_MAP()
 
 
@@ -268,12 +269,8 @@ void CLeafELMDlg::OnPaint()
 	  dc.TextOutA(xx,yy,s);
 
 	  if (serial.IsOpen()) {
-	    if (!QueryELM())
-	      Invalidate();
+	    PostMessage(WM_USER+1,0,0);
 	  }
-
-	  
-	  //		CDialogEx::OnPaint();
 	}
 }
 
@@ -456,6 +453,7 @@ int CLeafELMDlg::ReadCanData(int msgcnt)
 
 int CLeafELMDlg::OpenSerial(char *portname)
 {
+	serial.Close();
   char devname[25];
   sprintf(devname,"\\\\.\\%s",portname);
   char s[80];
@@ -559,6 +557,7 @@ void CLeafELMDlg::OnBnClickedConnect()
     OpenSerial(fn);
     if (serial.IsOpen()) {
       SetupELM();
+	  Invalidate();
     }
   }
 }
@@ -576,4 +575,12 @@ void CLeafELMDlg::FindSerialPorts()
     }
   }
   m_cmbCommPort.SetCurSel(0);
+}
+
+
+LRESULT CLeafELMDlg::OnWmUser(WPARAM wparm,LPARAM lparam)
+{
+    QueryELM();
+	Invalidate();
+	return 1;
 }

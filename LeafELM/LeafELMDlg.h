@@ -99,4 +99,5 @@ public:
 	afx_msg void OnBnClickedConnect();
 	CButton m_btnConnect;
 	CComboBox m_cmbCommPort;
+	LRESULT OnWmUser(WPARAM wparm,LPARAM lparam);
 };
